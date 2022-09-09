@@ -11,11 +11,11 @@ import { getProduct } from "../../../redux/productSlice/ProductSlice";
 const URL = "http://localhost:300/files";
 
 export function Sidebar() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get("query"));
-  const dispatch = useDispatch();
+  const [serach, setSearch] = useSearchParams();
   const { category } = useSelector((state) => state.category);
   const { userId } = useParams();
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(getCategory());
@@ -42,15 +42,16 @@ export function Sidebar() {
       setItems(data);
       setCurrentPage(currentPage);
     },
-    [limit]
+    [limit, userId]
   );
   useEffect(() => {
     fetchProducts(1);
-  }, [fetchProducts]);
+  }, [fetchProducts, setSearch]);
+
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
-
     fetchProducts(currentPage);
+    setSearch({ currentPage, limit });
   };
 
   /**********************************************/
@@ -104,11 +105,14 @@ export function Sidebar() {
                         style={{ minHeight: 225 }}
                       >
                         <div className="card-body">
-                          <h6 className="card-title text-center h4">
+                          <h6 className="card-title text-center h5">
                             {item.name}
                           </h6>
                           <h6 className="card-subtitle mb-2 text-muted text-center">
-                            {item.price} تومان
+                            {item.price
+                              .toString()
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+                            تومان
                           </h6>
 
                           <p className="card-text">
@@ -130,7 +134,7 @@ export function Sidebar() {
           </div>
         </div>
       </div>
-      <div style={{ position: "relative", bottom: "30px" }}>
+      <div dir="rtl" style={{ position: "relative", bottom: "30px" }}>
         <ReactPaginate
           previousLabel={"قبلی"}
           nextLabel={"بعدی"}

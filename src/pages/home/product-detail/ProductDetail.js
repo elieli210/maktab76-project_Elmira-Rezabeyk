@@ -15,24 +15,70 @@ import "../../../assets/style.css";
 // import for swiper
 import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper";
 import { StarRating } from "./StarRating";
+//import { editCardItems } from "../../../redux/cardItemsSlice/cardItemsSlice";
+//import axios from "axios";
 
 const URL = "http://localhost:300/files";
 export const ProductDetail = () => {
   const { userId } = useParams();
-  const [count, setCount] = useState(0);
+  const cardFromLocalStorage = JSON.parse(
+    localStorage.getItem("cartItems") || "[]"
+  );
+  const [cartItems, setCartItems] = useState(cardFromLocalStorage);
+  const [count, setCount] = useState(1);
   const { product } = useSelector((store) => store.product);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getProduct());
   }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  //console.log(basket)
   const decreament = () => {
-    count > 0 ? setCount(count - 1) : setCount(0);
+    count > 0 ? setCount(count - 1) : setCount(1);
   };
   const increament = (item) => {
     count < item.quantity ? setCount(count + 1) : setCount(count);
   };
+  console.log("count", count);
 
+  /*********************Add to Basket **********************/
+
+  const handleBasket = (item) => {
+    const exist = cartItems.find((x) => x.id === item.id);
+    if (exist) {
+      setCartItems(
+        cartItems.map((x) =>
+          x.id === item.id ? { ...exist, quantity: exist.quantity + count } : x
+        )
+      );
+
+      //////////////////////////////////////
+      /* let nameItem = cartItems[0].name;
+      let priceItem = cartItems[0].price;
+      let quantityItem = cartItems[0].quantity;
+      console.log(nameItem, "2");
+      axios
+        .post(`http://localhost:300/cardItems`, {
+          id: item.id,
+          name: nameItem,
+          price: priceItem,
+          quantity: quantityItem,
+        })
+        .then((res) => console.log(res))
+        .catch((error) => {
+          console.log(error.message);
+        }); */
+      ///////////////////////////////////////////////////
+    } else {
+      setCartItems([...cartItems, { ...item, quantity: count }]);
+    }
+  };
+  console.log(cartItems);
   return (
     <div dir="rtl">
       {userId.length > 0
@@ -53,7 +99,7 @@ export const ProductDetail = () => {
                   >
                     {item.image.map((elem) => {
                       return (
-                        <SwiperSlide key={item.id}>
+                        <SwiperSlide>
                           <img src={`${URL}/${elem}`} alt="عکس کالا" />
                         </SwiperSlide>
                       );
@@ -89,25 +135,36 @@ export const ProductDetail = () => {
                         </h6>
                       ) : null}
                     </div>
-                    <h6 className="py-3">قیمت:{item.price} تومان </h6>
-                    <div className="d-flex gap-2 py-2">
+                    <h6 className="py-3">
+                      قیمت:
+                      {item.price
+                        .toString()
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                      تومان
+                    </h6>
+                    <div className="d-flex gap-2 my-3">
                       <span className="my-2 ">تعداد: </span>
                       <button
-                        className="px-3 rounded-circle border-primary"
+                        className="px-3 p-2  rounded bg-info text-white border-white"
                         onClick={() => increament(item)}
                       >
                         +
                       </button>
                       <p className="px-2 my-2 border">{count}</p>
                       <button
-                        className="px-3 rounded-circle border-danger"
+                        className=" p-2 px-3 rounded bg-danger text-white border-white"
                         onClick={() => decreament()}
                       >
                         -
                       </button>
                     </div>
                     <div className="d-flex gap-2">
-                      <button className="enter" >
+                      <button
+                        className="enter"
+                        onClick={() => {
+                          handleBasket(item);
+                        }}
+                      >
                         افزودن به سبد خرید
                         <AiOutlineShoppingCart />
                       </button>

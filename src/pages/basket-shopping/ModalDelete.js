@@ -1,42 +1,22 @@
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { useDispatch } from "react-redux";
-import {
-  deleteProduct,
-  getProduct,
-} from "../../../redux/productSlice/ProductSlice";
-import { unwrapResult } from "@reduxjs/toolkit";
 
-function DeleteModal({
+function ModalDelete({
   tempItem,
   setIsModalOpen,
   isModalOpen,
   setShowToast,
   handleCancel,
-  currentPage,
-  fetchProducts,
 }) {
-
-  const dispatch = useDispatch();
-
   const handleRemove = (id) => {
-    dispatch(deleteProduct(id))
-      .then(unwrapResult)
-      .then(() => {
-        fetchProducts(currentPage);
-        //setLoading(false);
-        handleCancel();
-      })
-      .catch((e) => {
-        console.log(e?.Message);
-        //setLoading(false);
-      });
-    dispatch(getProduct());
+    const carts = JSON.parse(localStorage.getItem("cartItems"));
+    const filtered = carts.filter((item) => item.id !== id);
+    localStorage.setItem("cartItems", JSON.stringify(filtered));
     setIsModalOpen(false);
+    JSON.parse(localStorage.getItem("cartItems"));
     setTimeout(() => {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      dispatch(getProduct());
     }, 1000);
   };
 
@@ -68,4 +48,4 @@ function DeleteModal({
   );
 }
 
-export default DeleteModal;
+export default ModalDelete;

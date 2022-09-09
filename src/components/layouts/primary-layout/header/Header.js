@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { NavLink } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { FiLogIn } from "react-icons/fi";
 
 export const Header = () => {
+  const [basket, setBasket] = useState([]);
+  useEffect(() => {
+    setBasket(JSON.parse(localStorage.getItem("cartItems")));
+  }, []);
   return (
     <nav
       className="navbar "
@@ -41,6 +45,24 @@ export const Header = () => {
             }}
           />
           سبد خرید
+          <div
+            className="rounded-circle bg-danger d-flex justify-content-center align-items-center "
+            style={{
+              color: "white",
+              width: "25px",
+              height: "1.5rem",
+              position: "absolute",
+              bottom: "13px",
+              right: "9px",
+              transform: "translate(25%,25%)",
+            }}
+          >
+            {basket !== null && basket !== undefined ? (
+              basket.length
+            ) : (
+              <div>0</div>
+            )}
+          </div>
         </NavLink>
         <NavLink
           className="btn admin"

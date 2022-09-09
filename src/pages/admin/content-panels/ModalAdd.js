@@ -2,40 +2,42 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { updateProduct } from "../../../redux/productSlice/ProductSlice";
+import {
+  createProduct,
+  getProduct,
+} from "../../../redux/productSlice/ProductSlice";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 import axiosInstance from "../../../api/http";
 import { unwrapResult } from "@reduxjs/toolkit";
 
-function ModalEdit({
-  image,
-  setImage,
-  handleCancel,
+function ModalAdd({
   showStore,
   setShowStore,
-  thumbnail,
-  name,
-  setName,
-  description,
-  category,
-  tempEdit,
-  setCategory,
-  price,
-  setPrice,
-  setThumbnail,
-  setQuantity,
-  quantity,
-  setShowToastEdit,
-  setDescription,
-  setSubcategory,
-  subcategory,
+  handleCancel,
+  setShowToastAdd,
   currentPage,
   fetchProducts,
 }) {
+  const [category, setCategory] = useState(0);
+  const [categoryErr, setCategoryErr] = useState("");
+  const [subcategory, setSubcategory] = useState(0);
+  const [name, setName] = useState("");
+  const [nameErr, setNameErr] = useState("");
+  const [description, setDescription] = useState("");
+  const [descriptionErr, setDescriptionErr] = useState("");
+  const [price, setPrice] = useState();
+  const [pirceErr, setPriceErr] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
+  const [thumbnailErr, setThumbnailErr] = useState("");
+  const [id, setId] = useState(20);
+  const [quantity, setQuantity] = useState();
+  const [image, setImage] = useState([]);
   const dispatch = useDispatch();
   const URL = "http://localhost:300/files";
+
   const resetInputs = () => {
     setName("");
     setDescription("");
@@ -45,38 +47,12 @@ function ModalEdit({
     setQuantity("");
     setSubcategory("");
     setImage([]);
-  };
-  //////Edit save//////
-  const handleSave = () => {
-    let newProduct = {
-      id: tempEdit,
-      name: name,
-      category: Number(category),
-      subcategory: Number(subcategory),
-      description: description,
-      quantity: quantity,
-      price: Number(price),
-      thumbnail: thumbnail,
-      image: image,
-    };
-    dispatch(updateProduct(newProduct))
-      .then(unwrapResult)
-      .then(() => {
-        fetchProducts(currentPage);
-       
-        handleCancel();
-      })
-      .catch((e) => {
-        console.log(e?.Message);
-      });
-
-    setTimeout(() => {
-      setShowToastEdit(true);
-      setTimeout(() => setShowToastEdit(false), 3000);
-    }, 1000);
-    setShowStore(false);
+    setThumbnailErr("");
+    setThumbnailErr("");
+    setDescriptionErr("");
   };
 
+  ///////add/////
   const onImageChange = async (e) => {
     let formData = new FormData();
     let file = e.target.files[0];
@@ -85,10 +61,70 @@ function ModalEdit({
       return setThumbnail(res.data.filename);
     });
   };
+  const handleName = (event) => {
+    setName(event.target.value);
+    if (/\d/.test(name)) {
+      setNameErr(".نام نباید شامل اعداد باشد");
+    } else if (event.target.value === "") {
+      setNameErr("این قسمت نمی تواند خالی باشد");
+    } else if (name.length <= 2) {
+      setNameErr(" طول کاراکتر وارد شده کوتاه است");
+    } else {
+      setNameErr("");
+    }
+  };
+  const handleCategory = (event) => {
+    setCategory(event.target.value);
+    if (event.target.value === "") {
+      setCategoryErr("این قسمت نمی تواند خالی باشد");
+    } else {
+      setCategoryErr("");
+    }
+  };
+  const handlePrice = (event) => {
+    setPrice(event.target.value);
+    if (event.target.value.length <= 2) {
+      setPriceErr(" طول کاراکتر وارد شده کوتاه است");
+    } else if (event.target.value === "") {
+      setPriceErr("این قسمت نمی تواند خالی باشد");
+    } else {
+      setPriceErr("");
+    }
+  };
+  const handleSave = () => {
+    setId((prevCount) => prevCount + 1);
+    console.log(id);
+    let newProduct = {
+      name: name,
+      price: parseInt(price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")),
+      category: Number(category),
+      subcategory: Number(subcategory),
+      description: description,
+      thumbnail: thumbnail,
+      quantity: quantity,
+      image: image,
+    };
+    dispatch(createProduct(newProduct))
+      .then(unwrapResult)
+      .then(() => {
+        fetchProducts(currentPage);
+        handleCancel();
+      })
+      .catch((e) => {
+        console.log(e?.Message);
+      });
+
+    dispatch(getProduct());
+
+    setShowStore(false);
+    setTimeout(() => {
+      setShowToastAdd(true);
+      setTimeout(() => setShowToastAdd(false), 3000);
+      dispatch(getProduct());
+    }, 1000);
+  };
+
   const onBigImageChange = async (e) => {
-    // let file = e.target.files[0];
-    // let picture = URL.createObjectURL(file);
-    // setThumbnail(picture);
     let formData = new FormData();
     let file = e.target.files[0];
     formData.append("image", file);
@@ -96,6 +132,17 @@ function ModalEdit({
       return setImage([res.data.filename]);
     });
   };
+  const isValid =
+    nameErr === "" &&
+    pirceErr === "" &&
+    descriptionErr === "" &&
+    categoryErr === "" &&
+    thumbnailErr === "" &&
+    name !== "" &&
+    category !== "" &&
+    subcategory !== "" &&
+    quantity !== "" &&
+    price !== "";
   return (
     <Modal show={showStore} onHide={handleCancel} className="g-5 " dir="rtl">
       <Modal.Header
@@ -103,7 +150,7 @@ function ModalEdit({
         className="enter"
         style={{ display: "flex", gap: "311px" }}
       >
-        <Modal.Title>ویرایش کالا</Modal.Title>
+        <Modal.Title>افزودن کالا</Modal.Title>
       </Modal.Header>
 
       <Modal.Body className="enter">
@@ -127,7 +174,7 @@ function ModalEdit({
               height: "50px",
             }}
             src={`${URL}/${thumbnail}`}
-            alt="تصویر کالا"
+            alt=" "
           />
           <p>تصویر بزرگ کالا</p>
           <input
@@ -148,18 +195,19 @@ function ModalEdit({
               height: "50px",
             }}
             src={`${URL}/${image}`}
-            alt="تصویر کالا"
+            alt=" "
           />
 
           <p>نام کالا</p>
           <input
-            defaultValue={name}
+            value={name}
             required
             type="text"
             onChange={(event) => {
-              setName(event.target.value);
+              handleName(event);
             }}
           />
+          <p>{nameErr}</p>
         </div>
         <p>موجودی</p>
         <input
@@ -178,16 +226,16 @@ function ModalEdit({
           id={""}
           required
           onChange={(event) => {
-            setCategory(event.target.value);
+            handleCategory(event);
           }}
         >
-          <option value={1} className="pant-fit">
+          <option value={1} defaultValue={category} className="pant-fit">
             شلوار
           </option>
-          <option value={2} className="t-shirt">
+          <option value={2} defaultValue={category} className="t-shirt">
             لباس دخترانه تابستانی
           </option>
-          <option value={3} className="hoodi">
+          <option value={3} defaultValue={category} className="hoodi">
             لباس دخترانه زمستانی
           </option>
         </select>
@@ -201,27 +249,27 @@ function ModalEdit({
             setSubcategory(event.target.value);
           }}
         >
-          <option value={1} className="pant">
+          <option value={1} defaultValue={subcategory} className="pant">
             جین
           </option>
-          <option value={2} className="pant-fit">
+          <option value={2} defaultValue={subcategory} className="pant-fit">
             مام فیت
           </option>
-          <option value={3} className="t-shirt">
+          <option value={3} defaultValue={subcategory} className="t-shirt">
             تی شرت
           </option>
-          <option value={4} className="hoodi">
+          <option value={4} defaultValue={subcategory} className="hoodi">
             هودی
           </option>
         </select>
         <p>قیمت کالا</p>
 
         <input
-          defaultValue={price}
+          value={price}
           required
           type="text"
           onChange={(event) => {
-            setPrice(event.target.value);
+            handlePrice(event);
           }}
         />
         <p>توضیحات</p>
@@ -231,18 +279,21 @@ function ModalEdit({
           dir="rtl"
           editor={ClassicEditor}
           data={description}
-          //onReady={(editor) => {}}
+          onReady={(editor) => {}}
           onChange={(event, editor) => {
-            const data = editor.getData();
-            console.log(data);
+            setDescription(editor.getData());
+
+            //const data = editor.getData();
           }}
           onBlur={(event, editor) => {}}
           onFocus={(event, editor) => {}}
         />
+        <p>{descriptionErr}</p>
       </Modal.Body>
 
       <Modal.Footer dir="rtl" className="d-flex justify-content-between">
         <Button
+          disabled={!isValid}
           size="sm"
           variant="success"
           type="submit"
@@ -266,4 +317,4 @@ function ModalEdit({
   );
 }
 
-export default ModalEdit;
+export default ModalAdd;
