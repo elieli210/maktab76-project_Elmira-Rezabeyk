@@ -1,68 +1,62 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "../../../assets/style.css";
 import ReactPaginate from "react-paginate";
-
+import { useSearchParams } from "react-router-dom";
 import { ListGroup } from "react-bootstrap";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-//import { openTab, setCrudMode } from "../../redux/features/tab/tabsSlice";
 import { useEffect } from "react";
 import { getCategory } from "../../../redux/categorySlice/categorySlice";
 import { getProduct } from "../../../redux/productSlice/ProductSlice";
 const URL = "http://localhost:300/files";
 
 export function Sidebar() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("query"));
   const dispatch = useDispatch();
   const { category } = useSelector((state) => state.category);
   const { userId } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(getCategory());
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     dispatch(getProduct());
-  }, []);
+  }, [dispatch]);
 
-  //**********************pagination************************* */
-
+  /**********************pagination**************************/
+  const [currentPage, setCurrentPage] = useState(1);
   const [items, setItems] = useState([]);
   const [pageCount, setpageCount] = useState(0);
 
-  let limit = 4;
+  let limit = 3;
 
-  useEffect(() => {
-    const getComments = async () => {
+  const fetchProducts = useCallback(
+    async (currentPage) => {
       const res = await fetch(
-        `http://localhost:300/products?_page=1&_limit=${limit}`
+        `http://localhost:300/products?_page=${currentPage}&_limit=${limit}&category=${userId}`
       );
       const data = await res.json();
       const total = res.headers.get("x-total-count");
       setpageCount(Math.ceil(total / limit));
-      console.log("total", total);
       setItems(data);
-    };
-    getComments();
-  }, [limit]);
-
-  const fetchComments = async (currentPage) => {
-    const res = await fetch(
-      `http://localhost:300/products?_page=${currentPage}&_limit=${limit}`
-    );
-    const data = await res.json();
-    return data;
-  };
+      setCurrentPage(currentPage);
+    },
+    [limit]
+  );
+  useEffect(() => {
+    fetchProducts(1);
+  }, [fetchProducts]);
   const handlePageClick = async (data) => {
-
     let currentPage = data.selected + 1;
 
-    const commentsFormServer = await fetchComments(currentPage);
-
-    setItems(commentsFormServer);
-    window.scrollTo(0, 0);
+    fetchProducts(currentPage);
   };
+
+  /**********************************************/
   const navLinkStyles = ({ isActive }) => {
     return {
-      color: isActive ? "#FF69B4" : "black",
+      color: isActive ? "black" : "#FF69B4",
       textDecoration: "none",
       padding: "20px",
     };
@@ -110,11 +104,11 @@ export function Sidebar() {
                         style={{ minHeight: 225 }}
                       >
                         <div className="card-body">
-                          <h6 className="card-title text-center h2">
+                          <h6 className="card-title text-center h4">
                             {item.name}
                           </h6>
                           <h6 className="card-subtitle mb-2 text-muted text-center">
-                            {item.price}
+                            {item.price} تومان
                           </h6>
 
                           <p className="card-text">
@@ -125,7 +119,7 @@ export function Sidebar() {
                             />
                           </p>
                           <NavLink to={`${item.id}`} style={navLinkStyles}>
-                            جزئیات
+                            جزئیات بیشتر...
                           </NavLink>
                         </div>
                       </div>
@@ -145,7 +139,7 @@ export function Sidebar() {
           marginPagesDisplayed={2}
           pageRangeDisplayed={3}
           onPageChange={handlePageClick}
-          containerClassName={"pagination justify-content-center"}
+          containerClassName={"pagination justify-content-center "}
           pageClassName={"page-item"}
           pageLinkClassName={"page-link"}
           previousClassName={"page-item"}

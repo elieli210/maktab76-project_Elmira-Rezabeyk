@@ -12,8 +12,7 @@ import MyToastAdd from "./content-panels/MyToastAdd";
 import axios from "../../api/http";
 export const ContentProducts = () => {
   const [showStore, setShowStore] = useState(false);
-  //const [selectedFile, setSelectedFile] = useState(null);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(0);
   const [categoryErr, setCategoryErr] = useState("");
   const [subcategory, setSubcategory] = useState(0);
 
@@ -29,18 +28,17 @@ export const ContentProducts = () => {
   const [id, setId] = useState(20);
   const [showToastAdd, setShowToastAdd] = useState(false);
   const [quantity, setQuantity] = useState();
-
+  const [image, setImage] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getProduct());
-  }, []);
+  }, [dispatch]);
   //////images
   /////////
   // const URL_IMAGE = "http://localhost:300/files";
 
   const onImageChange = async (e) => {
-   
     let formData = new FormData();
     let file = e.target.files[0];
     formData.append("image", file);
@@ -48,22 +46,22 @@ export const ContentProducts = () => {
       return setThumbnail(res.data.filename);
     });
   };
-   // const [file] = event.target.files;
-    // setImg(URL.createObjectURL(file));
-    // if (event.target.value === "") {
-    //   setImgErr("این قسمت نمی تواند خالی باشد");
-    // } else {
-    //   setImgErr("");
-    // }
-    /////////// ine
-    //   let file = event.target.files[0];
-    //   let picture = URL.createObjectURL(file);
-    //   setThumbnail(picture);
-    //   if (event.target.value === "") {
-    //     setThumbnailErr("این فیلد نمی تواند خالی باشد");
-    //   }
-    // };
-    //console.log(thumbnail);
+  // const [file] = event.target.files;
+  // setImg(URL.createObjectURL(file));
+  // if (event.target.value === "") {
+  //   setImgErr("این قسمت نمی تواند خالی باشد");
+  // } else {
+  //   setImgErr("");
+  // }
+  /////////// ine
+  //   let file = event.target.files[0];
+  //   let picture = URL.createObjectURL(file);
+  //   setThumbnail(picture);
+  //   if (event.target.value === "") {
+  //     setThumbnailErr("این فیلد نمی تواند خالی باشد");
+  //   }
+  // };
+  //console.log(thumbnail);
   const handleName = (event) => {
     setName(event.target.value);
     if (/\d/.test(name)) {
@@ -103,8 +101,8 @@ export const ContentProducts = () => {
       //id: id,
       name: name,
       price: price,
-      category: category,
-      subcategory: subcategory,
+      category: Number(category),
+      subcategory: Number(subcategory),
       description: description,
       thumbnail: thumbnail,
       quantity: quantity,
@@ -225,14 +223,14 @@ export const ContentProducts = () => {
                 handleCategory(event);
               }}
             >
-              <option value={1} defaultValue={category} className="">
+              <option value={Number(1)} defaultValue={category} className="">
                 شلوار
               </option>
 
-              <option value={2} defaultValue={category} className="">
+              <option value={Number(2)} defaultValue={category} className="">
                 لباس دخترانه تابستانی{" "}
               </option>
-              <option value={3} defaultValue={category} className="">
+              <option value={Number(3)} defaultValue={category} className="">
                 لباس دخترانه زمستانی{" "}
               </option>
             </select>
