@@ -6,7 +6,7 @@ import { Home } from "../pages/home/Home";
 import { ProductDetail } from "../pages/home/product-detail/ProductDetail";
 import { BasketShopping } from "../pages/basket-shopping/BasketShopping";
 import { Sidebar } from "../pages/home/sidebar/Sidebar";
-import { FormFinalize } from "../pages/basket-shopping/FormFinalize";
+import { FormFinalize } from "../pages/basket-shopping/FormFinalize/FormFinalize";
 import { Bank } from "../components/fishing/Bank";
 import { AdminAuth } from "../pages/adminLogin/AdminAuth";
 import { ContentOrders } from "../pages/admin/ContentOrders";
@@ -43,15 +43,16 @@ export const AnimatedRoutes = () => {
             <Route path="sidebar" element={<Sidebar />}>
               <Route path=":userId" />
             </Route>
+            <Route path="formFinalize" element={<FormFinalize />} />
+            <Route path="success" element={<Success />} />
+            <Route path="cancel" element={<NotSuccess />} />
           </Route>
-          <Route path="formFinalize" element={<FormFinalize />} />
-          <Route path="payment" element={<Bank />} />
+
+          {/* <Route path="payment" element={<Bank />} /> */}
 
           <Route element={<AdminAuth />}>
-            <Route path="login" />
+            <Route path="login" element={<AdminAuth />} />
           </Route>
-          <Route path="success" element={<Success />} />
-          <Route path="cancel" element={<NotSuccess />} />
 
           <Route path="panel" element={<AdminLayout />}>
             <Route index element={<WlcAdmin />} />

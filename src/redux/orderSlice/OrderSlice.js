@@ -43,6 +43,17 @@ export const getNotDeliveredOrder = createAsyncThunk(
     }
   }
 );
+export const createOrder = createAsyncThunk(
+  "order/createOrder",
+  async (order) => {
+    try {
+      const response = await axios.post(`${URL}`, order);
+      return response.data;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+);
 
 export const orderSlice = createSlice({
   name: "order",
@@ -50,6 +61,16 @@ export const orderSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getOrder.fulfilled, (state, action) => {
       state.order = action.payload;
+    });
+    ///////create
+    builder.addCase(createOrder.pending, (state) => {
+      return { ...state };
+    });
+    builder.addCase(createOrder.fulfilled, (state) => {
+      return { ...state };
+    });
+    builder.addCase(createOrder.rejected, (state, action) => {
+      return { ...state, error: action.payload };
     });
   },
 });

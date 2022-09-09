@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../api/http";
 
 const URL = "http://localhost:300/products";
 
@@ -24,7 +25,7 @@ export const deleteProduct = createAsyncThunk(
   "products/deleteProduct",
   async (product) => {
     try {
-      const response = await axios.delete(`${URL}/${product}`);
+      const response = await axiosInstance.delete(`${URL}/${product}`);
       return response.data;
     } catch (error) {
       return Promise.reject(error);
@@ -36,7 +37,7 @@ export const createProduct = createAsyncThunk(
   "products/createProduct",
   async (product) => {
     try {
-      const response = await axios.post(`${URL}`, product);
+      const response = await axiosInstance.post(`${URL}`, product);
       return response.data;
     } catch (error) {
       return Promise.reject(error);
@@ -48,7 +49,7 @@ export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async (product) => {
     try {
-      const response = await axios.put(`${URL}/${product.id}`, product);
+      const response = await axiosInstance.put(`${URL}/${product.id}`, product);
       return response.data;
     } catch (error) {
       return Promise.reject(error);
@@ -59,7 +60,7 @@ export const updateProduct = createAsyncThunk(
 export const editPriceOrQuantity = createAsyncThunk(
   "products/editPriceOrQuantity",
   ({ id, newProduct }) => {
-    return axios
+    return axiosInstance
       .patch(`${URL}/${id}`, {
         price: newProduct.price,
         quantity: newProduct.quantity,
@@ -85,7 +86,7 @@ export const productSlice = createSlice({
         // state: state.product.splice(
         //   state.product.findIndex((pro) => pro.id === action.payload),
         //   1
-        // ),
+       // ),
 
         ...state,
         //   product: state.splice(

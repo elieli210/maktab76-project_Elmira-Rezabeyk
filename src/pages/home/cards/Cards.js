@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getProduct } from "../../../redux/productSlice/ProductSlice";
@@ -40,7 +40,8 @@ export const Cards = () => {
                     <div className="card-body">
                       <h5 className="card-title text-center ">{item.name}</h5>
                       <h6 className="card-subtitle mb-2 text-muted text-center">
-                        قیمت:{item.price} تومان
+                        قیمت:
+                        {item.price} تومان
                       </h6>
                       <p className="card-text">
                         <img

@@ -1,12 +1,34 @@
+import axios from "axios";
 import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-
-function ModalOrder({ tempItem, showModal, handleCancel }) {
-  console.log("tempItem", tempItem);
+const URL = "http://localhost:300";
+function ModalOrder({
+  tempItem,
+  showModal,
+  handleCancel,
+  setShowToastOrder,
+  setShowModal,
+}) {
+  const handleDeliver = () => {
+    axios
+      .patch(`${URL}/orders/${tempItem.id}`, {
+        delivered: "true",
+        expectAt: new Date().getTime(),
+      })
+      .then((res) => console.log(res))
+      .catch((error) => {
+        console.log(error.message);
+      });
+    setTimeout(() => {
+      setShowToastOrder(true);
+      setTimeout(() => setShowToastOrder(false), 3000);
+    }, 1000);
+    setShowModal(false);
+  };
   return (
     <Modal show={showModal} onHide={handleCancel} dir={"rtl"}>
-      <Modal.Header closeButton style={{ gap: "280px" }}>
+      <Modal.Header closeButton style={{ gap: "289px" }}>
         <Modal.Title>نمایش سفارش </Modal.Title>
       </Modal.Header>
 
@@ -17,8 +39,14 @@ function ModalOrder({ tempItem, showModal, handleCancel }) {
           </p>
           <p>آدرس:{tempItem.address}</p>
           <p>تلفن:{tempItem.phone}</p>
-          <p>زمان تحویل:{tempItem.expectAt}</p>
-          <p>زمان سفارش:{tempItem.createdAt}</p>{" "}
+          <p>
+            زمان تحویل:
+            {`${new Date(tempItem?.expectAt).toLocaleDateString("fa-IR")}`}
+          </p>
+          <p>
+            زمان سفارش:
+            {`${new Date(tempItem?.createdAt).toLocaleDateString("fa-IR")}`}
+          </p>{" "}
         </>
 
         <Table>
@@ -43,11 +71,27 @@ function ModalOrder({ tempItem, showModal, handleCancel }) {
         </Table>
       </Modal.Body>
 
-      <Modal.Footer style={{ gap: "305px" }}>
-        <Button variant="secondary">تحویل شد</Button>
-        <Button variant="danger" onClick={(e) => handleCancel(e)}>
-          بستن
-        </Button>
+      <Modal.Footer className="d-flex justify-content-between">
+        {tempItem.delivered === "true" ? (
+          <>
+            <p>
+              زمان تحویل:
+              {`${new Date(tempItem?.expectAt).toLocaleDateString("fa-IR")}`}
+            </p>
+            <Button variant="danger" onClick={(e) => handleCancel(e)}>
+              بستن
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="secondary" onClick={(e) => handleDeliver(e)}>
+              تحویل شد
+            </Button>
+            <Button variant="danger" onClick={(e) => handleCancel(e)}>
+              بستن
+            </Button>
+          </>
+        )}
       </Modal.Footer>
     </Modal>
   );

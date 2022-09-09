@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
 import ModalOrder from "./ModalOrder";
+import MyToastOrder from "./MyToastOrder";
 const URL_delivered = "http://localhost:300/orders?delivered=true";
 const URL_notdelivered = "http://localhost:300/orders?delivered=false";
 
@@ -14,6 +15,7 @@ export const PanelOrder = () => {
   const [showModal, setShowModal] = useState(false);
   const [pageCount, setpageCount] = useState(0);
   const [tempItem, setTempItem] = useState("");
+  const [showToastOrder, setShowToastOrder] = useState(false);
   let limit = 6;
 
   useEffect(() => {
@@ -73,6 +75,13 @@ export const PanelOrder = () => {
 
   return (
     <div>
+      <div style={{ display: showToastOrder ? "block" : "none" }}>
+        <MyToastOrder
+          show={showToastOrder}
+          message={"🦄محصول مورد نظر به وضعیت تحویل شد تغییر پیدا کرد."}
+          type={"danger"}
+        />
+      </div>
       <form
         style={{
           display: "flex",
@@ -82,7 +91,6 @@ export const PanelOrder = () => {
           gap: "10px",
           margin: "8px",
         }}
-       
         onChange={(event) => handleChange(event)}
       >
         <input className="px-2" value="false" type="radio" name="radio" />
@@ -115,11 +123,7 @@ export const PanelOrder = () => {
                 <thead key={i}>
                   <tr id={item.id}>
                     <td>{`${item?.username} ${item?.lastname}`}</td>
-                    <td>
-                      {item?.prices
-                        .toString()
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                    </td>
+                    <td>{item?.prices}</td>
                     <td>{`${new Date(item?.expectAt).toLocaleDateString(
                       "fa-IR"
                     )}`}</td>
@@ -144,6 +148,8 @@ export const PanelOrder = () => {
                   <ModalOrder
                     tempItem={tempItem}
                     showModal={showModal}
+                    showToastOrder={showToastOrder}
+                    setShowToastOrder={setShowToastOrder}
                     setShowModal={setShowModal}
                     handleCancel={() => setShowModal(false)}
                   />

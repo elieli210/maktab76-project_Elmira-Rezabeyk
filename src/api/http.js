@@ -9,9 +9,12 @@ export const injectStore = (_store) => {
   store = _store;
 };
 
-axios.defaults.baseURL = BASE_URL;
-
-axios.interceptors.request.use((req) => {
+//axios.defaults.baseURL = BASE_URL;
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+axiosInstance.interceptors.request.use((req) => {
   if (req.url === REFRESH_TOKEN_URL) {
     const token = localStorage.getItem(REFRESH_TOKEN);
     req.headers.refreshToken = token;
@@ -22,7 +25,7 @@ axios.interceptors.request.use((req) => {
   return req;
 });
 
-axios.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response.status !== 401) {
@@ -32,7 +35,6 @@ axios.interceptors.response.use(
     if (
       error.response.status === 401 &&
       originalRequest.url === REFRESH_TOKEN_URL
-      
     ) {
       return Promise.reject(error);
     }
@@ -47,4 +49,4 @@ axios.interceptors.response.use(
     }
   }
 );
-export default axios;
+export default axiosInstance;
