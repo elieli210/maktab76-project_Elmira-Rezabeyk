@@ -108,3 +108,15 @@
   height: 309px;
   object-fit: cover;
 }
+#star {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.on {
+  color: #fe0883;
+}
+.off {
+  color: #000;
+}

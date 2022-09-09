@@ -6,23 +6,17 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { login } from "../../redux/userSlice/usersSlice";
 
 export const InputForm = () => {
-  // const [name, setName] = useState("");
-  // const [nameError, setNameError] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
-  // const [pass, setPass] = useState("");
-  // const [passError, setPassError] = useState("");
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   /*************RegExp for password login */
-  const re = new RegExp(
-    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/
-  );
+  // const re = new RegExp(
+  //   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/
+  // );
   /***************** Inputs Validation *************************/
   const handleUserName = (event) => {
     setUsername(event.target.value);

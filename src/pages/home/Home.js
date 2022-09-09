@@ -1,11 +1,7 @@
 import React from "react";
 import { Cards } from "./cards/Cards";
-// import { CardTitle } from "./cards/CardTitle";
 import { motion } from "framer-motion";
-
 import { Swiper, SwiperSlide } from "swiper/react";
-
-
 
 // import for swiper
 import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper";

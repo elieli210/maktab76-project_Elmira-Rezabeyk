@@ -41,6 +41,8 @@ export const PanelProduct = () => {
   const [pageCount, setpageCount] = useState(0);
   const [quantity, setQuantity] = useState();
   const [subcategory, setSubcategory] = useState(0);
+  const [image, setImage] = useState([]);
+
   // const [src, setSrc] = useState([]);
   const dispatch = useDispatch();
   let limit = 7;

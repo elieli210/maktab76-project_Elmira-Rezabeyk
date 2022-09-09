@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { getProduct } from "../../../redux/productSlice/ProductSlice";
 import { IoMdArrowDropleft } from "react-icons/io";
 import { getCategory } from "../../../redux/categorySlice/categorySlice";
@@ -11,15 +11,12 @@ export const Cards = () => {
   const dispatch = useDispatch();
   const { product } = useSelector((store) => store.product);
   const { category } = useSelector((store) => store.category);
-
   useEffect(() => {
     dispatch(getProduct());
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     dispatch(getCategory());
-  }, []);
-
- 
+  }, [dispatch]);
   return (
     <div dir="rtl" className="mb-5">
       {category.map((elem) => (
@@ -28,7 +25,7 @@ export const Cards = () => {
             {`کالاهای گروه ${elem.name}`}
           </NavLink>
           <IoMdArrowDropleft />
-          <div className="row m-2 ">
+          <div className="row m-2 " key={elem.id}>
             {product.map((item) =>
               item.category === elem.id ? (
                 <div
@@ -43,7 +40,7 @@ export const Cards = () => {
                     <div className="card-body">
                       <h5 className="card-title text-center ">{item.name}</h5>
                       <h6 className="card-subtitle mb-2 text-muted text-center">
-                        قیمت:{item.price}
+                        قیمت:{item.price} تومان
                       </h6>
                       <p className="card-text">
                         <img
@@ -60,9 +57,6 @@ export const Cards = () => {
           </div>
         </>
       ))}
-
-     
     </div>
   );
 };
-

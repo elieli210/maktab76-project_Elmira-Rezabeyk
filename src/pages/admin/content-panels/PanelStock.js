@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
+import { useDispatch } from "react-redux";
+import { editPriceOrQuantity } from "../../../redux/productSlice/ProductSlice";
 
 export const PanelStock = () => {
   //***********************pagination*************************//
-
+  const [getData, setGetData] = useState({});
   const [items, setItems] = useState([]);
-  const [quantity, setQuantity] = useState();
+  //const [quantity, setQuantity] = useState();
   const [pageCount, setpageCount] = useState(0);
-  const [editMode, setEditMode] = useState(false);
+  //const [editMode, setEditMode] = useState(false);
+  const [tempPrice, setTempPrice] = useState();
+  const [temptQuantity, setTempQuantity] = useState();
+  //const [rowsPerPage, setRowsPerPage] = useState(5);
+  //const [goods, setGoods] = useState([]);
+  const [edit, setEdit] = useState(false);
+  const [tempId, setTempId] = useState();
+
+  const dispatch = useDispatch();
+
   let limit = 7;
 
   useEffect(() => {
@@ -43,46 +54,71 @@ export const PanelStock = () => {
     window.scrollTo(0, 0);
   };
   ///////////////////
-  useEffect(() => {
-    const _editMode = items.some((item) => item.editMode === true);
-    setEditMode(_editMode);
-  }, [items]);
+  // useEffect(() => {
+  //   const _editMode = items.some((item) => item.editMode === true);
+  //   setEditMode(_editMode);
+  // }, [items]);
 
-  function changeEditMode(item, isEditMode) {
-    const index = items.findIndex((f) => f.id == item.id);
-    items[index].editMode = isEditMode;
+  // function changeEditMode(item, isEditMode) {
+  //   const index = items.findIndex((f) => f.id == item.id);
+  //   items[index].editMode = isEditMode;
 
-    setItems([...items]);
-  }
+  //   setItems([...items]);
+  // }
 
-  function setInputValue(item, input) {
-    const { value } = input.target;
+  // function setInputValue(item, input) {
+  //   const { value } = input.target;
 
-    const index = items.findIndex((f) => f.id == item.id);
-    items[index].price = value;
-    //items[index].quantity = value;
+  //   const index = items.findIndex((f) => f.id == item.id);
+  //   items[index].price = value;
+  //   //items[index].quantity = value;
 
-    setItems(items);
-  }
-  function setInputQuantity(item, input) {
-    const { value } = input.target;
+  //   setItems(items);
+  // }
+  // function setInputQuantity(item, input) {
+  //   const { value } = input.target;
 
-    const index = items.findIndex((f) => f.id == item.id);
-    items[index].quantity = value;
-    //items[index].quantity = value;
+  //   const index = items.findIndex((f) => f.id == item.id);
+  //   items[index].quantity = value;
+  //   //items[index].quantity = value;
 
-    setItems(items);
-  }
+  //   setItems(items);
+  // }
 
-  function save() {
-    const _items = items.map((item) => ({ ...item, editMode: false }));
-    setItems(_items);
-  }
+  // function save() {
+  //   const _items = items.map((item) => ({ ...item, editMode: false }));
+  //   setItems(_items);
+  // }
+  ///////////////////////
+  const handleEditPriceAndQuantity = (item) => {
+    setTempPrice(item?.price);
+    setTempQuantity(item?.quantity);
+    setEdit(true);
+    console.log("tempPrice", tempPrice);
+    setTempId(item?.id);
+    setGetData({
+      ...getData,
+      [item?.id]: { price: item?.price, quantity: item?.quantity },
+    });
+    console.log(getData);
+  };
+  const handleEditData = () => {
+    const keyId = Object.keys(getData);
+    const values = Object.values(getData);
+    for (let i = 0; i < keyId.length; i++) {
+      dispatch(editPriceOrQuantity({ id: keyId[i], newData: values[i] }));
+    }
+    setEdit(false);
+  };
 
   return (
     <div>
-      {editMode && (
-        <button className="enter" onClick={() => save()} type="button">
+      {edit && (
+        <button
+          onClick={() => handleEditData()}
+          className="enter"
+          type="button"
+        >
           ذخیره
         </button>
       )}
@@ -108,49 +144,35 @@ export const PanelStock = () => {
             <thead key={i}>
               <tr id={item.id}>
                 <td>{item?.name}</td>
-
-                {!item.editMode && (
-                  <td
-                    dir="rtl"
-                    onClick={() => changeEditMode(item, true)}
-                  >{`${item?.price
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} تومان`}</td>
-                )}
-                {item.editMode && (
-                  <input
-                    type="text"
-                    autoFocus
-                    defaultValue={item.price}
-                    onChange={(e) => setInputValue(item, e)}
-                    style={{
-                      width: " 86px",
-                      position: "relative",
-                      left: "-126px",
-                    }}
-                    className="form-control"
-                  />
-                )}
-                {!item.editMode && (
-                  <td
-                    dir="rtl"
-                    onClick={() => changeEditMode(item, true)}
-                  >{`${item?.quantity}`}</td>
-                )}
-                {item.editMode && (
-                  <input
-                    type="text"
-                    autoFocus
-                    defaultValue={item.quantity}
-                    onChange={(e) => setInputValue(item, e)}
-                    className="form-control"
-                    style={{
-                      position: "relative",
-                      left: "-290px",
-                      width: "32px",
-                    }}
-                  />
-                )}
+                <td onClick={() => handleEditPriceAndQuantity(item)}>
+                  {edit && item.id === tempId ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      defaultValue={item.price}
+                      className="form-control text-center"
+                    />
+                  ) : (
+                    <td className="text-center d-flex" dir="rtl">{`${item?.price
+                      .toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} تومان`}</td>
+                  )}
+                </td>
+                <td onClick={() => handleEditPriceAndQuantity(item)}>
+                  {edit && item.id === tempId ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      defaultValue={item.quantity}
+                      className="form-control text-center d-flex"
+                    />
+                  ) : (
+                    <td
+                      className="d-flex text-center"
+                      dir="rtl"
+                    >{`${item?.quantity}`}</td>
+                  )}
+                </td>
               </tr>
             </thead>
           ))}
