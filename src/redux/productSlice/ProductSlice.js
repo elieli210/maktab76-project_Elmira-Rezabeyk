@@ -55,6 +55,18 @@ export const updateProduct = createAsyncThunk(
     }
   }
 );
+/*  EDIT PRICE & QUANTITY */
+export const editPriceOrQuantity = createAsyncThunk(
+  "products/editPriceOrQuantity",
+  ({ id, newProduct }) => {
+    return axios
+      .patch(`${URL}/${id}`, {
+        price: newProduct.price,
+        quantity: newProduct.quantity,
+      })
+      .then((res) => res.data);
+  }
+);
 
 export const productSlice = createSlice({
   name: "product",
