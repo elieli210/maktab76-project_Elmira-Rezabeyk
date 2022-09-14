@@ -1,21 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form } from "formik";
 import { TextField } from "./TextField";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 export const SignUp = () => {
+  const [total, setTotal] = useState();
   const navigate = useNavigate();
-  const phoneRegExp =
-    /^((\\0[1-9]{1,4}[ \\-])|(\\([0-9]{2,3}\\)[ \\-])|([0-9]{2,4})[ \\-])?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-  //const dateRegExp = /^[0-9]{4}[0-9]{2}[0-9]{2}/;
 
+  useEffect(() => {
+    setTotal(JSON.parse(localStorage.getItem("total")));
+  }, []);
+
+  /***************Date Picker ********************/
+  const [props, setProps] = useState({
+    value: new Date().toLocaleDateString("fa-IR"),
+    format: "YYYY-MM-DD",
+    onChange: (date) => console.log(date.format()),
+    calendar: persian,
+    locale: persian_fa,
+    calendarPosition: "bottom-right",
+  });
+  /*************** Yup Validation************** */
   const validate = Yup.object({
     username: Yup.string()
       .max(10, "نام حداکثر می تواند شامل ده کاراکتر باشد. ")
       .min(3, "نام حداقل باید شامل بیشتر از دو کاراکتر باشد.")
       .required("این قسمت نمی تواند خالی باشد"),
-    lastName: Yup.string()
+    lastname: Yup.string()
       .max(20, "نام خانوادگی حداکثر می تواند شامل 20 کاراکتر باشد.")
       .min(3, "نام خانوادگی حداقل باید شامل بیشتر از دو کاراکتر باشد.")
       .required("این قسمت نمی تواند خالی باشد"),
@@ -26,50 +40,35 @@ export const SignUp = () => {
     phone: Yup.string()
       .max(12, "حداکثر ارقام 12 می باشد")
       .min(8, "حداقل باید شامل هشت رقم باشد.")
-      .matches(phoneRegExp, "شماره ی وارد شده صحیح نمی باشد!")
       .required("این قسمت نمی تواند خالی باشد"),
     expectAt: Yup.string().required("این قسمت نمی تواند خالی باشد"),
   });
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // const data = new FormData(e.target);
-    // let obj = {
-    //   username: data.get("username"),
-    //   lastName: data.get("lastName"),
-    //   address: data.get("address"),
-    //   phone: data.get("phone"),
-    //   expectAt: parseInt(
-    //     (new Date(data.get("expectAt")).getTime() / 1000).toFixed(0)
-    //   ),
-    // };
-
-    // localStorage.setItem("formInput", JSON.stringify(obj));
-    // navigate("//localhost:3005");
+  const handleSubmit = (values) => {
+    localStorage.setItem("formInput", JSON.stringify(values, null, 2));
+    navigate("//localhost:3005");
   };
 
   return (
     <Formik
       initialValues={{
         username: "",
-        lastName: "",
+        lastname: "",
         address: "",
         phone: "",
-        expectAt: "",
+        expectAt: new Date().getTime(),
+        prices: total,
+        delivered: false,
+        createdAt: new Date().getTime(),
       }}
       validationSchema={validate}
-      // onSubmit: (values) => {
-      //   alert(`اطلاعات ${JSON.stringify(values)} با موفقیت ثبت شد`);
-      // },
-      onSubmit={() => {
-        alert(`.اطلاعات شما با موفقیت ثبت شد`);
-      }}
+      onSubmit={handleSubmit}
     >
       {(formik) => (
         <div dir="rtl" style={{ marginRight: "15px" }} className="mb-5">
           <h1 className="my-4 font-weight-bold .display-4">
             نهایی کردن سبد خرید
           </h1>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={formik.handleSubmit}>
             <TextField
               label="نام:"
               name="username"
@@ -77,7 +76,12 @@ export const SignUp = () => {
               onChange={formik.handleChange}
               value={formik.values.username}
             />
-            <TextField label="نام خانوادگی: " name="lastName" type="text" />
+            <TextField
+              label="نام خانوادگی: "
+              name="lastname"
+              type="text"
+              value={formik.values.lastname}
+            />
             <TextField
               label="آدرس:"
               name="address"
@@ -89,17 +93,17 @@ export const SignUp = () => {
             <TextField
               label="تلفن همراه:"
               name="phone"
-              type="number"
+              type="text"
               onChange={formik.handleChange}
               value={formik.values.phone}
             />
-            <TextField
-              label="تاریخ تحویل:"
-              name="expectAt"
-              type="date"
-              onChange={formik.handleChange}
-              value={formik.values.expectAt}
-            />
+            <div style={{ display: "flex", marginBottom: "20px" }}>
+              <label htmlFor="address">تاریخ تحویل</label>
+              <div style={{ marginRight: "20px" }}>
+                <DatePicker {...props} onPropsChange={setProps} />
+              </div>
+            </div>
+
             <button className="btn btn-dark mt-3" type="submit">
               پرداخت
             </button>

@@ -7,11 +7,16 @@ function ModalDelete({
   isModalOpen,
   setShowToast,
   handleCancel,
+  total,
 }) {
-  const handleRemove = (id) => {
+  const handleRemove = (elem) => {
     const carts = JSON.parse(localStorage.getItem("cartItems"));
-    const filtered = carts.filter((item) => item.id !== id);
+    const filtered = carts.filter((item) => item.id !== elem.id);
     localStorage.setItem("cartItems", JSON.stringify(filtered));
+    document.getElementById(`${elem.id}`).remove();
+    const totalItems = document.getElementById("total");
+    const updatedTotal = total - elem.price * elem.count;
+    totalItems.innerText = `مجموع مبلغ ${updatedTotal.toString()} تومان `;
     setIsModalOpen(false);
     JSON.parse(localStorage.getItem("cartItems"));
     setTimeout(() => {
@@ -40,7 +45,7 @@ function ModalDelete({
         >
           انصراف
         </Button>
-        <Button variant="secondary" onClick={() => handleRemove(tempItem.id)}>
+        <Button variant="secondary" onClick={() => handleRemove(tempItem)}>
           حذف
         </Button>
       </Modal.Footer>

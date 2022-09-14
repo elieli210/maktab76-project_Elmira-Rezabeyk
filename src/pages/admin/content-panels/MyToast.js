@@ -16,14 +16,14 @@ const MyToast = (props) => {
       <Toast
         className={`border text-white ${
           props.type === "success"
-            ? "border-success bg-success"
-            : "border-danger bg-danger"
+            ? "border-danger bg-danger"
+            : "border-success bg-success"
         }`}
         show={props.show}
       >
         <Toast.Header
           className={`text-white ${
-            props.type === "success" ? "bg-success" : "bg-danger"
+            props.type === "success" ? "bg-danger" : "bg-success"
           }`}
           closeButton={false}
         >

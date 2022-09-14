@@ -21,7 +21,7 @@ export const Footer = () => {
           gap: "60px",
           alignItems: "center",
           justifyContent: "center",
-          bottom: "0px",
+          bottom: 0,
           position: "fixed",
           left: 0,
           width: "100%",
