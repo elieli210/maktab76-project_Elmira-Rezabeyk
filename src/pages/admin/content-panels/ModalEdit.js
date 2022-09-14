@@ -55,7 +55,7 @@ function ModalEdit({
       subcategory: Number(subcategory),
       description: description,
       quantity: quantity,
-      price: Number(price),
+      price: price,
       thumbnail: thumbnail,
       image: image,
     };
@@ -63,7 +63,7 @@ function ModalEdit({
       .then(unwrapResult)
       .then(() => {
         fetchProducts(currentPage);
-       
+
         handleCancel();
       })
       .catch((e) => {

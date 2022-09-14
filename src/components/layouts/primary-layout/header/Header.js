@@ -3,9 +3,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { NavLink } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { FiLogIn } from "react-icons/fi";
+// import { useSelector } from "react-redux";
 
 export const Header = () => {
   const [basket, setBasket] = useState([]);
+
   useEffect(() => {
     setBasket(JSON.parse(localStorage.getItem("cartItems")));
   }, []);
@@ -52,8 +54,8 @@ export const Header = () => {
               width: "25px",
               height: "1.5rem",
               position: "absolute",
-              bottom: "13px",
-              right: "9px",
+              bottom: "57px",
+              left: "-1px",
               transform: "translate(25%,25%)",
             }}
           >

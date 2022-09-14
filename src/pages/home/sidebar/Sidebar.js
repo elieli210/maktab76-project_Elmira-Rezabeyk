@@ -30,7 +30,6 @@ export function Sidebar() {
   const [pageCount, setpageCount] = useState(0);
 
   let limit = 3;
-
   const fetchProducts = useCallback(
     async (currentPage) => {
       const res = await fetch(
@@ -62,6 +61,8 @@ export function Sidebar() {
       padding: "20px",
     };
   };
+  console.log(currentPage, serach);
+
   return (
     <div>
       <div className="primary ">

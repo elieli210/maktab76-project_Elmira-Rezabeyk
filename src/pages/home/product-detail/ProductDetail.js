@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getProduct } from "../../../redux/productSlice/ProductSlice";
 import { IoMdArrowDropleft } from "react-icons/io";
 import { AiOutlineShoppingCart } from "react-icons/ai";
@@ -12,20 +12,18 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "../../../assets/style.css";
 
-// import for swiper
 import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper";
 import { StarRating } from "./StarRating";
-//import { editCardItems } from "../../../redux/cardItemsSlice/cardItemsSlice";
-//import axios from "axios";
 
 const URL = "http://localhost:300/files";
 export const ProductDetail = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const cardFromLocalStorage = JSON.parse(
     localStorage.getItem("cartItems") || "[]"
   );
   const [cartItems, setCartItems] = useState(cardFromLocalStorage);
-  const [count, setCount] = useState(1);
+  const [counter, setCounter] = useState(0);
   const { product } = useSelector((store) => store.product);
   const dispatch = useDispatch();
 
@@ -37,14 +35,13 @@ export const ProductDetail = () => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  //console.log(basket)
   const decreament = () => {
-    count > 0 ? setCount(count - 1) : setCount(1);
+    counter > 0 ? setCounter(counter - 1) : setCounter(1);
   };
   const increament = (item) => {
-    count < item.quantity ? setCount(count + 1) : setCount(count);
+    counter < item.quantity ? setCounter(counter + 1) : setCounter(counter);
   };
-  console.log("count", count);
+  console.log("counter", counter);
 
   /*********************Add to Basket **********************/
 
@@ -53,32 +50,16 @@ export const ProductDetail = () => {
     if (exist) {
       setCartItems(
         cartItems.map((x) =>
-          x.id === item.id ? { ...exist, quantity: exist.quantity + count } : x
+          x.id === item.id
+            ? { ...exist, count: String(exist.quantity + counter) }
+            : x
         )
       );
-
-      //////////////////////////////////////
-      /* let nameItem = cartItems[0].name;
-      let priceItem = cartItems[0].price;
-      let quantityItem = cartItems[0].quantity;
-      console.log(nameItem, "2");
-      axios
-        .post(`http://localhost:300/cardItems`, {
-          id: item.id,
-          name: nameItem,
-          price: priceItem,
-          quantity: quantityItem,
-        })
-        .then((res) => console.log(res))
-        .catch((error) => {
-          console.log(error.message);
-        }); */
-      ///////////////////////////////////////////////////
     } else {
-      setCartItems([...cartItems, { ...item, quantity: count }]);
+      setCartItems([...cartItems, { ...item, count: String(counter) }]);
     }
+    navigate("/basket");
   };
-  console.log(cartItems);
   return (
     <div dir="rtl">
       {userId.length > 0
@@ -136,11 +117,11 @@ export const ProductDetail = () => {
                       ) : null}
                     </div>
                     <h6 className="py-3">
-                      قیمت:
+                      <span> قیمت: </span>
                       {item.price
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      تومان
+                      <span> تومان </span>
                     </h6>
                     <div className="d-flex gap-2 my-3">
                       <span className="my-2 ">تعداد: </span>
@@ -150,7 +131,7 @@ export const ProductDetail = () => {
                       >
                         +
                       </button>
-                      <p className="px-2 my-2 border">{count}</p>
+                      <p className="px-2 my-2 border">{counter}</p>
                       <button
                         className=" p-2 px-3 rounded bg-danger text-white border-white"
                         onClick={() => decreament()}

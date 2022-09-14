@@ -2,29 +2,37 @@ import axios from "axios";
 import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-const URL = "http://localhost:300";
+import { unwrapResult } from "@reduxjs/toolkit";
+import axiosInstance from "../../../api/http";
+
+const URL = "http://localhost:300/orders";
 function ModalOrder({
   tempItem,
   showModal,
   handleCancel,
   setShowToastOrder,
   setShowModal,
+  currentPage,
+  fetchProducts,
 }) {
-  const handleDeliver = () => {
-    axios
-      .patch(`${URL}/orders/${tempItem.id}`, {
+  const handleDeliver = async () => {
+    axiosInstance
+      .patch(`${URL}/${tempItem.id}`, {
         delivered: "true",
         expectAt: new Date().getTime(),
       })
-      .then((res) => console.log(res))
+      .then((res) => {
+        fetchProducts(currentPage);
+        console.log(res);
+      })
       .catch((error) => {
-        console.log(error.message);
+        console.log(error?.message);
       });
     setTimeout(() => {
       setShowToastOrder(true);
       setTimeout(() => setShowToastOrder(false), 3000);
     }, 1000);
-    setShowModal(false);
+    handleCancel();
   };
   return (
     <Modal show={showModal} onHide={handleCancel} dir={"rtl"}>

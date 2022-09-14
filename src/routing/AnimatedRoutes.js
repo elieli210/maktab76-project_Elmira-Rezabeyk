@@ -13,8 +13,6 @@ import { ContentOrders } from "../pages/admin/ContentOrders";
 import { ContentProducts } from "../pages/admin/ContentProducts";
 import { ContentStock } from "../pages/admin/ContentStock";
 import { AdminLayout } from "../pages/admin/AdminLayout";
-import { Success } from "../components/fishing/Success";
-import { NotSuccess } from "../components/fishing/NotSuccess";
 import { Error } from "../pages/error/Error";
 import { WlcAdmin } from "../pages/admin/WlcAdmin";
 import { Provider } from "react-redux";
@@ -44,12 +42,8 @@ export const AnimatedRoutes = () => {
               <Route path=":userId" />
             </Route>
             <Route path="formFinalize" element={<FormFinalize />} />
-            <Route path="success" element={<Success />} />
-            <Route path="cancel" element={<NotSuccess />} />
+            <Route path="bank" element={<Bank />} />
           </Route>
-
-          {/* <Route path="payment" element={<Bank />} /> */}
-
           <Route element={<AdminAuth />}>
             <Route path="login" element={<AdminAuth />} />
           </Route>
@@ -59,10 +53,6 @@ export const AnimatedRoutes = () => {
             <Route path="order" element={<ContentOrders />} />
             <Route path="stocks" element={<ContentStock />} />
             <Route path="products" element={<ContentProducts />} />
-          </Route>
-
-          <Route>
-            <Route path="bank" element={<Bank />} />
           </Route>
         </Routes>
       </AnimatePresence>
