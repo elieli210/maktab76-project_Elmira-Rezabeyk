@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
@@ -16,39 +16,34 @@ export const PanelOrder = () => {
   const [pageCount, setpageCount] = useState(0);
   const [tempItem, setTempItem] = useState("");
   const [showToastOrder, setShowToastOrder] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
   let limit = 6;
 
-  useEffect(() => {
-    const getComments = async () => {
+  const fetchProducts = useCallback(
+    async (currentPage) => {
       const res = await fetch(
-        `http://localhost:300/orders?_page=1&_limit=${limit}`
+        `http://localhost:300/orders?_page=${currentPage}&_limit=${limit}`
       );
       const data = await res.json();
       const total = res.headers.get("x-total-count");
       setpageCount(Math.ceil(total / limit));
       setItems(data);
-    };
+      setCurrentPage(currentPage);
+    },
+    [limit]
+  );
 
-    getComments();
-  }, [limit]);
-
-  const fetchComments = async (currentPage) => {
-    const res = await fetch(
-      `http://localhost:300/orders?_page=${currentPage}&_limit=${limit}`
-    );
-    const data = await res.json();
-    return data;
-  };
+  useEffect(() => {
+    fetchProducts(1);
+  }, [fetchProducts]);
 
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
-
-    const commentsFormServer = await fetchComments(currentPage);
-
-    setItems(commentsFormServer);
-    // scroll to the top
-    window.scrollTo(0, 0);
+    fetchProducts(currentPage);
   };
+  //   window.scrollTo(0, 0);
+  // };
   /**************************filtering*****************************/
   const handleChange = (event) => {
     if (event.target.value === "false") {
@@ -109,7 +104,6 @@ export const PanelOrder = () => {
         <thead>
           <tr className="bg-light">
             <th>نام کاربر</th>
-
             <th>مجموع مبلغ</th>
             <th>زمان ثبت سفارش</th>
             <th>بررسی سفارش ها</th>
@@ -120,7 +114,7 @@ export const PanelOrder = () => {
         {items.length > 0
           ? items?.map((item, i) => (
               <>
-                <thead key={i}>
+                <thead key={item.id}>
                   <tr id={item.id}>
                     <td>{`${item?.username} ${item?.lastname}`}</td>
                     <td>{item?.prices}</td>
@@ -135,7 +129,6 @@ export const PanelOrder = () => {
                         بررسی سفارش
                       </button>
                     </td>
-                    {/* <td>{item.delivered}</td> */}
 
                     {item.delivered === "true" ? (
                       <td> {`تحویل شده`}</td>
@@ -152,6 +145,8 @@ export const PanelOrder = () => {
                     setShowToastOrder={setShowToastOrder}
                     setShowModal={setShowModal}
                     handleCancel={() => setShowModal(false)}
+                    currentPage={currentPage}
+                    fetchProducts={fetchProducts}
                   />
                 )}
               </>

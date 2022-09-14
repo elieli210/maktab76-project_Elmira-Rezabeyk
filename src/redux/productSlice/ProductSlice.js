@@ -77,23 +77,14 @@ export const productSlice = createSlice({
     builder.addCase(getProduct.fulfilled, (state, action) => {
       state.product = action.payload;
     });
+    
     //delete product
     builder.addCase(deleteProduct.pending, (state) => {
       return { ...state };
     });
     builder.addCase(deleteProduct.fulfilled, (state, action) => {
       return {
-        // state: state.product.splice(
-        //   state.product.findIndex((pro) => pro.id === action.payload),
-        //   1
-       // ),
-
         ...state,
-        //   product: state.splice(
-        //     state.findIndex((item) => item.id === action.payliad),
-        //     1
-        //   ),
-        //   reload: true,
       };
     });
     builder.addCase(deleteProduct.rejected, (state, action) => {

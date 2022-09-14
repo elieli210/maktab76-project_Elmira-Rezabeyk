@@ -12,6 +12,7 @@ import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import axiosInstance from "../../../api/http";
 import { unwrapResult } from "@reduxjs/toolkit";
+//import defaultImg from "../../../assets/pic/icon2.png";
 
 function ModalAdd({
   showStore,
@@ -21,6 +22,7 @@ function ModalAdd({
   currentPage,
   fetchProducts,
 }) {
+  const defaultImg = "41cfdff705619935d61b721da4dffab7";
   const [category, setCategory] = useState(0);
   const [categoryErr, setCategoryErr] = useState("");
   const [subcategory, setSubcategory] = useState(0);
@@ -30,11 +32,13 @@ function ModalAdd({
   const [descriptionErr, setDescriptionErr] = useState("");
   const [price, setPrice] = useState();
   const [pirceErr, setPriceErr] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
+  const [thumbnail, setThumbnail] = useState(defaultImg);
   const [thumbnailErr, setThumbnailErr] = useState("");
   const [id, setId] = useState(20);
   const [quantity, setQuantity] = useState();
-  const [image, setImage] = useState([]);
+  const [image, setImage] = useState([defaultImg]);
+  console.log(image);
+  console.log(thumbnail);
   const dispatch = useDispatch();
   const URL = "http://localhost:300/files";
 
@@ -92,11 +96,10 @@ function ModalAdd({
     }
   };
   const handleSave = () => {
-    setId((prevCount) => prevCount + 1);
-    console.log(id);
+    //setId((prevCount) => prevCount + 1);
     let newProduct = {
       name: name,
-      price: parseInt(price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")),
+      price: price,
       category: Number(category),
       subcategory: Number(subcategory),
       description: description,
@@ -113,7 +116,6 @@ function ModalAdd({
       .catch((e) => {
         console.log(e?.Message);
       });
-
     dispatch(getProduct());
 
     setShowStore(false);

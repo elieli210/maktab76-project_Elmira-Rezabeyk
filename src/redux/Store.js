@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import cardItemsSlice from "./cardItemsSlice/cardItemsSlice";
+import cartSlice from "./cartSlice/cartSlice";
 import categorySlice from "./categorySlice/categorySlice";
 import orderSlice from "./orderSlice/OrderSlice";
 import productSlice from "./productSlice/ProductSlice";
@@ -10,6 +10,6 @@ export default configureStore({
     product: productSlice,
     users: usersSlice,
     category: categorySlice,
-    cardItems: cardItemsSlice,
+    cart: cartSlice,
   },
 });

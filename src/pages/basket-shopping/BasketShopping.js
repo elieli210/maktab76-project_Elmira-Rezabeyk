@@ -10,20 +10,20 @@ export const BasketShopping = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempItem, setTempItem] = useState();
   const [showToast, setShowToast] = useState(false);
-  const [count, setCount] = useState(1);
+  const [counting, setCounting] = useState(1);
   let total = 0;
 
   useEffect(() => {
     setBasket(JSON.parse(localStorage.getItem("cartItems")));
-  }, [count]);
+  }, [counting]);
 
   const handleRemove = (item) => {
     setTempItem(item);
     setIsModalOpen(true);
   };
-  const addItem = (id) => {
-    let clickedItem = basket.filter((product) => product.id === id);
-    setCount(++clickedItem[0].quantity);
+  const addItem = (item) => {
+    let clickedItem = basket.filter((product) => product.id === item.id);
+    setCounting(++clickedItem[0].count);
     localStorage.setItem(
       "cartItems",
       JSON.stringify(
@@ -35,7 +35,7 @@ export const BasketShopping = () => {
   };
   const minusItem = (id) => {
     let clickedItem = basket.filter((product) => product.id === id);
-    setCount(--clickedItem[0].quantity);
+    setCounting(--clickedItem[0].count);
     localStorage.setItem(
       "cartItems",
       JSON.stringify(
@@ -49,20 +49,25 @@ export const BasketShopping = () => {
   const initialValue = 0;
   if (basket) {
     total = basket.reduce(
-      (accumulator, current) => accumulator + current.price * current.quantity,
+      (accumulator, current) => accumulator + current.price * current.count,
       initialValue
     );
   }
-  // console.log("length", basket.length);
+  useEffect(() => {
+    localStorage.setItem("total", JSON.stringify(total));
+  }, [total]);
+  
   return (
     <motion.div
       dir="rtl"
-      className="wrapper"
+      className="wrapper "
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div style={{ display: showToast ? "block" : "none" }}>
+      <div
+        style={{ marginBottom: "230px", display: showToast ? "block" : "none" }}
+      >
         <ToastDelete
           show={showToast}
           message={"محصول مورد نظر با موفقیت پاک شد🦄."}
@@ -76,6 +81,7 @@ export const BasketShopping = () => {
           tempItem={tempItem}
           isModalOpen={isModalOpen}
           setShowToast={setShowToast}
+          total={total}
         />
       )}
       <h4 className="m-5">سبد خرید</h4>
@@ -102,18 +108,20 @@ export const BasketShopping = () => {
             <>
               <tbody key={i}>
                 <tr id={item.id}>
-                  <td>{item.name}</td>
+                  <td onClick={() => navigate(`/productDetail/${item.id}`)}>
+                    {item.name}
+                  </td>
                   <td>{item.price}</td>
                   <td>
                     <button
                       className="px-2 rounded bg-info text-white border-white"
                       onClick={() => {
-                        addItem(item.id);
+                        addItem(item);
                       }}
                     >
                       +
                     </button>
-                    {item.quantity}
+                    {item.count}
 
                     <button
                       className="px-2 rounded bg-danger text-white border-white"
@@ -124,7 +132,7 @@ export const BasketShopping = () => {
                       -
                     </button>
                   </td>
-                  <td>{parseInt(item.quantity) * parseInt(item.price)}</td>
+                  <td>{parseInt(item.count) * parseInt(item.price)}</td>
                   <td>
                     <button
                       className="px-2 rounded bg-danger text-white border-white"
@@ -146,7 +154,7 @@ export const BasketShopping = () => {
       {/* <p  onClick={event => handleClick(100)}></p> */}
 
       <div className="d-flex justify-content-around">
-        <div className="">{`مجموع کل مبلغ : ${total
+        <div id="total" className="">{`مجموع کل مبلغ : ${total
           .toString()
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} تومان`}</div>
         <button

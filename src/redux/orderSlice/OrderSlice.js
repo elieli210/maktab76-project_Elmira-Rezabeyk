@@ -54,6 +54,29 @@ export const createOrder = createAsyncThunk(
     }
   }
 );
+export const updateOrder = createAsyncThunk(
+  "order/updateOrder",
+  async (order) => {
+    try {
+      const response = await axios.patch(`${URL}/${order.id}`, order);
+      return response.data;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+);
+
+export const addOrders = createAsyncThunk(
+  "order/addOrders",
+  async (clientData) => {
+    try {
+      const response = await axios.post(`${URL}`, clientData);
+      return response.data;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+);
 
 export const orderSlice = createSlice({
   name: "order",
@@ -71,6 +94,25 @@ export const orderSlice = createSlice({
     });
     builder.addCase(createOrder.rejected, (state, action) => {
       return { ...state, error: action.payload };
+    });
+    //////update
+    builder.addCase(updateOrder.pending, (state) => {
+      return { ...state };
+    });
+    builder.addCase(updateOrder.fulfilled, (state, action) => {
+      return { ...state };
+    });
+    builder.addCase(updateOrder.rejected, (state, action) => {
+      return { order: [], error: action.payload };
+    });
+    ///// add orders
+    builder.addCase(addOrders.fulfilled, (state, action) => {
+      state.order = action.payload;
+      localStorage.clear();
+      state.error = "";
+    });
+    builder.addCase(addOrders.rejected, (state, action) => {
+      state.error = action.error.message;
     });
   },
 });
